@@ -58,3 +58,6 @@ Await pauses the execution of the current async function until a Promise settles
 ### 3. Why do microtasks run before setTimeout(0)?
 
 JavaScript processes the microtask queue after the current job finishes and before moving to the next event-loop task, such as a timer callback.
+
+
+
