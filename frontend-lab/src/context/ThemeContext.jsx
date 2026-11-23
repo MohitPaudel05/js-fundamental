@@ -3,13 +3,27 @@ import { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') ?? 'light');
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved;
+    return typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  });
+
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('theme', theme);
   }, [theme]);
+
   const toggle = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
-  return <ThemeContext value={{ theme, toggle }}>{children}</ThemeContext>;
+
+  return (
+    <ThemeContext value={{ theme, toggle }}>
+      {children}
+    </ThemeContext>
+  );
 }
 
 export function useTheme() {
