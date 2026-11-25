@@ -145,3 +145,34 @@ A **hydration mismatch** occurs when the HTML generated on the server differs fr
 - **Accessible Form Controls**: The persistent search input on `/users` and the email field on `/login` feature explicit `aria-label` and `<label>` bindings.
 - **Color Contrast Ratios**: Light mode body text (`#0f172a` on `#ffffff`, 15.8:1) and dark mode text (`#e2e8f0` on `#131c2e`, 12.3:1) easily exceed WCAG AA (4.5:1) and AAA (7.0:1) requirements.
 - **Lighthouse Verification**: Evaluated under Chrome DevTools Lighthouse audit for Accessibility, achieving a score of **100/100** (&ge; 95 required).
+
+
+---
+
+# Assignment 1.4: Short Answers
+
+### 1. Server State vs. Client State
+
+| Property | Server State | Client (UI) State |
+| :--- | :--- | :--- |
+| **Ownership** | Resides on remote servers. The browser only holds an asynchronous cached snapshot. | Created and owned entirely inside the browser memory. |
+| **Persistence** | Persists across user sessions on the backend. | Transient; disappears on refresh unless explicitly saved in local storage. |
+| **Challenges** | Asynchronous fetching, background synchronization, cache staleness, request deduplication, network retries. | Sharing state across components, avoiding unnecessary re-renders. |
+| **Ideal Tool** | **TanStack Query**, SWR, RTK Query. | **Zustand**, React Context, `useState`. |
+| **Examples** | User records, product catalog, orders. | Modal open/closed, active tab index, current view mode (`grid` vs `list`). |
+
+### 2. One Reason to Choose Redux Toolkit Over Zustand
+
+Redux Toolkit provides strict architectural conventions, centralized action dispatching, and robust middleware support (e.g., deterministic time-travel debugging, listener middleware, complex audit logging). For large enterprise teams, this strict structure prevents inconsistent state mutation patterns across distributed codebases.
+
+### 3. What `staleTime` Does
+
+`staleTime` specifies how long cached data remains "fresh" before becoming "stale". Within `staleTime`, component mounts and window refocuses do not trigger network refetches, eliminating redundant requests during fast page navigations.
+
+### 4. Why `invalidateQueries` is Preferred
+
+`invalidateQueries` refetches authoritative data directly from the backend rather than assuming or manually predicting server side-effects (e.g., auto-generated IDs, database triggers, timestamps). This ensures client cache never falls out of sync with the true source of truth.
+
+### 5. Bonus (+2 Marks): Optimistic Update Notes
+
+Implemented `useToggleFavorite` in `src/hooks/useUsers.js` with `onMutate` (cancels active queries, snapshots cache, applies optimistic toggle), `onError` (rolls back cache to previous snapshot on failure), and `onSettled` (invalidates queries).
